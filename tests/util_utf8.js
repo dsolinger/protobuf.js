@@ -62,6 +62,15 @@ tape.test("utf8", function(test) {
         comp = utf8.read(prefixed, 0, prefixed.length);
         test.equal(comp, prefixedStr, "should preserve the ASCII prefix when falling back to the JS decoder");
 
+        // A surrogate pair (4-byte sequence) straddling the 8192-unit flush
+        // boundary must not leave a stale trailing code unit behind.
+        for (var pad = 8188; pad <= 8195; ++pad) {
+            var straddleStr = "\u03bb" + "b".repeat(pad) + "\ud83d\udcc5".repeat(4) + "z";
+            var straddle = Buffer.from(straddleStr, "utf8");
+            comp = utf8.read(straddle, 0, straddle.length);
+            test.equal(comp, straddleStr, "should handle a surrogate pair straddling the flush boundary (pad " + pad + ")");
+        }
+
         test.end();
     });
 

@@ -66,7 +66,7 @@ function utf8_read_js(buffer, start, end, str) {
             }
         }
         if (i > 8191) {
-            (parts || (parts = [])).push(String.fromCharCode.apply(String, chunk));
+            (parts || (parts = [])).push(String.fromCharCode.apply(String, chunk.slice(0, i)));
             i = 0;
         }
     }
